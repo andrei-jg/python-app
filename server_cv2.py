@@ -1,56 +1,38 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import numpy as np
 import cv2
 
 app = Flask(__name__)
 
-@app.route('/convertir_a_pixels', methods=['POST'])
-def convertir_a_pixels():
+@app.route('/', methods=['POST'])
+def receive_image():
+    # Obtener los datos de la imagen desde la solicitud POST
+    image_data = request.data
 
-    # Obtener los datos de la imagen enviada en la solicitud POST
-    imagen_data = request.data
-    # Decodificar los datos de la imagen en formato numpy array
-    imagen_np = np.frombuffer(imagen_data, np.uint8)
-    # Decodificar el numpy array en una imagen OpenCV
-    imagen_cv = cv2.imdecode(imagen_np, cv2.IMREAD_COLOR)
+    # Guardar los datos de la imagen en un archivo binario
+    with open('imagen_original.raw', 'wb') as f:
+        f.write(image_data)
 
-    cv2.imwrite('imagen_request.jpg', imagen_cv)
+    # Leer los datos de la imagen desde el archivo binario
+    image_np = np.fromfile('imagen_original.raw', dtype=np.uint16)
 
-    # Aquí puedes realizar cualquier procesamiento de imagen que desees
+    # Reorganizar los datos para que tengan la forma de la imagen original
+    # Ajusta las dimensiones según el tamaño de tu imagen
+    # Por ejemplo, para una imagen de 640x480:
+    height, width, channels = 480, 640, 4
+    if len(image_np) % (height * width * channels) == 0:
+        num_images = len(image_np) // (height * width * channels)
+        image_np = np.reshape(image_np, (num_images, height, width, channels))
+    else:
+        return 'Error: Tamaño del array no compatible con las dimensiones de la imagen.', 400
 
-    marker_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
-    param_markers = cv2.aruco.DetectorParameters_create()
-    marker_corners, marker_IDs, _ = cv2.aruco.detectMarkers(imagen_cv, marker_dict, parameters=param_markers)
+    # Convertir a formato compatible con OpenCV (BGR)
+    image_cv = (image_np / 65535.0 * 255).astype(np.uint8)
 
-    print(marker_dict)
-    print(param_markers)
-    print(marker_corners)
+    # Guardar la imagen en un archivo local
+    cv2.imwrite('imagen_original.png', image_cv[0])  # Solo guardamos la primera imagen si hay varias
 
-    if marker_corners:
-        print("YEAAAAAA")
-        for ids, corners in zip(marker_IDs, marker_corners):
-            tamano_marcador_pixeles = max(np.linalg.norm(corners[0][0] - corners[0][1]),
-                                            np.linalg.norm(corners[0][1] - corners[0][2]))
-            tamano_real_marcador_cm = 5.0  # Modifica esto con el tamaño real de tu marcador
-            tamano_real_marcador = (tamano_real_marcador_cm * tamano_marcador_pixeles) / tamano_marcador_pixeles
-            org_x, org_y = int(corners[0][0][0]), int(corners[0][0][1])
-            cv2.polylines(imagen_cv, [corners.astype(np.int32)], True, (0, 255, 255), 4, cv2.LINE_AA)
-            cv2.putText(imagen_cv, f'{tamano_real_marcador:.2f} cm', (org_x, org_y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
-            # Dibujar el contorno del marcador
-            cv2.drawContours(imagen_cv, [corners.astype(np.int32)], -1, (0, 255, 0), 2)
-            # self.marker_size_label.text = f'Marker Size: {tamano_real_marcador:.2f} cm'
-        
-
-    imagen_cv = cv2.cvtColor(imagen_cv, cv2.COLOR_RGBA2RGB)
-
-    cv2.imwrite('imagen_processed.jpg', imagen_cv)
-
-    # Convertir la imagen procesada de nuevo a formato JPEG
-    _, jpeg_imagen = cv2.imencode('.jpg', imagen_cv)
-
-    # Devolver la imagen procesada como respuesta
-    return jpeg_imagen.tobytes(), 200, {'Content-Type': 'image/jpeg'}
+    return 'Imagen recibida y guardada correctamente.', 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
