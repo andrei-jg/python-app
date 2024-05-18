@@ -13,7 +13,7 @@
             on_release:
                 root.manager.current = "screen2"
                 # reset health_points
-                root.manager.ids.screen_two.health_points = 100
+                root.manager.ids.register_view.health_points = 100
 
 <ScreenTwo>:        
 
@@ -30,15 +30,15 @@
 <Manager>:
     id: screen_manager
 
-    screen_one: screen_one
-    screen_two: screen_two
+    login_view: login_view
+    register_view: register_view
 
     ScreenOne:
-        id: screen_one
+        id: login_view
         name: "screen1"
         manager: screen_manager
 
     ScreenTwo:
-        id: screen_two
+        id: register_view
         name: "screen2"
         manager: screen_manager

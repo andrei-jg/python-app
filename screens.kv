@@ -1,0 +1,315 @@
+<LoginView>:
+    login_user: user
+    login_password: password
+    Screen:
+        MDCard:
+            size_hint: 0.9, None  # Adjust the width relative to the screen size
+            height: self.minimum_height  # Automatically adjust the height according to the content
+            pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+            elevation: 10
+            padding: '10dp'  # Use dp to ensure a consistent size across different resolutions
+            spacing: '10dp'
+            orientation: 'vertical'
+
+            Image:
+                source: root.path_image_login
+                size_hint: None, None
+                size: '170dp', '170dp'  # Adjust size as needed
+                pos_hint: {'center_x': 0.5}
+
+            MDLabel:
+                id: welcome_label
+                text: 'SIRMG'
+                font_size: '32sp'  # Use sp for font size for scalability
+                halign: 'center'
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding_y: '-3dp'
+                bold: True
+
+            MDLabel:
+                text: "Clásica"
+                halign: 'right'  # Alinea el texto horizontalmente al centro
+                size_hint_y: None  # Fuerza al MDLabel a tener una altura específica
+                size_hint_x: 0.7
+                height: self.texture_size[1]  # Ajusta la altura basándose en el tamaño del texto
+                paddig_x: '10dp'
+                padding_y: '-3dp'  # Ajusta el espacio vertical entre la imagen y el texto
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: user
+                hint_text: 'Correo'
+                icon_right: 'account'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: password
+                hint_text: 'Contraseña'
+                icon_right: 'eye-off'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+                password: True
+
+            Widget:
+                size_hint_y: None
+                height: '20dp'  # Spacer adjusted to a relative size
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1.05
+                spacing: '10dp'
+                pos_hint: {'center_x': 0.5}
+                padding: '10dp'
+                orientation: 'horizontal'
+
+                MDRoundFlatButton:
+                    text: 'Iniciar Sesión'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+                    on_press: 
+                        root.validate_credential()
+                        
+
+                MDRoundFlatButton:
+                    text: 'Olvidé mi cuenta'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+
+<RegisterView>:        
+    Screen:
+        MDCard:
+            size_hint: 0.9, None  # Adjust the width relative to the screen size
+            height: self.minimum_height  # Automatically adjust the height according to the content
+            pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+            elevation: 10
+            padding: '10dp'  # Use dp to ensure a consistent size across different resolutions
+            spacing: '10dp'
+            orientation: 'vertical'
+
+            Image:
+                source: 'views/images/vrLogo.png'
+                size_hint: None, None
+                size: '170dp', '170dp'  # Adjust size as needed
+                pos_hint: {'center_x': 0.5}
+
+            MDLabel:
+                id: welcome_label
+                text: 'SIRMG'
+                font_size: '32sp'  # Use sp for font size for scalability
+                halign: 'center'
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding_y: '-3dp'
+                bold: True
+
+            MDLabel:
+                
+                text: "Clásica"
+                halign: 'right'  # Alinea el texto horizontalmente al centro
+                size_hint_y: None  # Fuerza al MDLabel a tener una altura específica
+                size_hint_x: 0.7
+                height: self.texture_size[1]  # Ajusta la altura basándose en el tamaño del texto
+                paddig_x: '10dp'
+                padding_y: '-3dp'  # Ajusta el espacio vertical entre la imagen y el texto
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: user
+                hint_text: 'Correo'
+                icon_right: 'account'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: password
+                hint_text: ''
+                icon_right: 'eye-off'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+                password: True
+
+            Widget:
+                size_hint_y: None
+                height: '20dp'  # Spacer adjusted to a relative size
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1.05
+                spacing: '10dp'
+                pos_hint: {'center_x': 0.5}
+                padding: '10dp'
+                orientation: 'horizontal'
+
+                MDRoundFlatButton:
+                    text: 'Iniciar Sesión'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+                    on_press: 
+                        root.switch()
+                        root.manager.current = "register_view"
+
+                MDRoundFlatButton:
+                    text: 'Olvidé mi cuenta'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+
+<PrincipalView>:        
+    Screen:
+        MDCard:
+            size_hint: 0.9, None  # Adjust the width relative to the screen size
+            height: self.minimum_height  # Automatically adjust the height according to the content
+            pos_hint: {'center_x': 0.5, 'center_y': 0.55}
+            elevation: 10
+            padding: '10dp'  # Use dp to ensure a consistent size across different resolutions
+            spacing: '10dp'
+            orientation: 'vertical'
+
+            MDLabel:
+                id: welcome_label
+                text: 'Bienvenido'
+                font_size: '15sp'  # Use sp for font size for scalability
+                halign: 'left'
+                size_hint_y: None
+                height: self.texture_size[1]
+                padding_y: '-1dp'
+                bold: True
+
+            MDLabel:
+                text: root.user_name
+                font_size: '12sp'
+                halign: 'left'  # Alinea el texto horizontalmente al centro
+                size_hint_y: 0.3  # Fuerza al MDLabel a tener una altura específica
+                size_hint_x: 0.7
+                height: self.texture_size[1]  # Ajusta la altura basándose en el tamaño del texto
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: user
+                hint_text: 'Correo'
+                icon_right: 'account'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: password
+                hint_text: ''
+                icon_right: 'eye-off'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+                password: True
+
+            Widget:
+                size_hint_y: None
+                height: '20dp'  # Spacer adjusted to a relative size
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1.05
+                spacing: '10dp'
+                pos_hint: {'center_x': 0.5}
+                padding: '10dp'
+                orientation: 'horizontal'
+
+                MDRoundFlatButton:
+                    text: 'Iniciar Sesión'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+                    on_press: 
+                        root.switch()
+                        root.manager.current = "register_view"
+
+                MDRoundFlatButton:
+                    text: 'Olvidé mi cuenta'
+                    font_size: '14sp'
+                    size_hint: 0.3, None  # Adjust the size relatively
+                    size_hint_y: None  # Use size_hint_y to allow height scaling
+                    height: '48dp'
+
+<Manager>:
+    id: screen_manager
+
+    login_view: login_view
+    register_view: register_view
+    principal_view: principal_view
+
+    LoginView:
+        id: login_view
+        name: "login_view"
+        manager: screen_manager
+
+    RegisterView:
+        id: register_view
+        name: "register_view"
+        manager: screen_manager
+
+    PrincipalView:
+        id: principal_view
+        name: "principal_view"
+        manager: screen_manager
+
+<P>:
+    Label:
+        text: root.text
+        size_hint: 0.6, 0.1
+        pos_hint: {"x":0.2, "top":0.7}
+
+    Button:
+        text: "Cerrar"
+        size_hint: 0.8, 0.3
+        pos_hint: {"x":0.1, "y":0.1}
+        on_release: root.popup.dismiss()
+        # on_press = lambda *args: login.popup_exit.dismiss()

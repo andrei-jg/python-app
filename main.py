@@ -1,29 +1,22 @@
-from kivy.lang import Builder
-from kivy.utils import platform
-from kivy_app import MyApp
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
+from kivy.properties import ObjectProperty, NumericProperty
+from kivymd.app import MDApp
 
-angle = 0
-resolution = "(1920, 1080)"
-if platform == 'android':
-    angle = -90
+from views.login import LoginView
+from views.register import RegisterView
+from views.principal import PrincipalView
 
-Builder.load_string(f'''
-<MyLayout>:
-    orientation: 'vertical'
-    Camera:
-        id: camera
-        resolution: {resolution}
-        play: True
-        canvas.before:
-            PushMatrix
-            Rotate:
-                angle: {angle}
-                origin: self.center
-        canvas.after:
-            PopMatrix
-    ProcessedFrame:
-        id: processed_frame
-''')
+class Manager(ScreenManager):
+    login_view = ObjectProperty(None)
+    register_view = ObjectProperty(None)
+    principal_view = ObjectProperty(None)
+
+class ScreensApp(MDApp):
+    def build(self):
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "BlueGray"
+        m = Manager(transition=NoTransition())
+        return m
 
 if __name__ == "__main__":
-    MyApp().run()
+    ScreensApp().run()
