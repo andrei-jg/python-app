@@ -279,12 +279,27 @@
                     size_hint_y: None  # Use size_hint_y to allow height scaling
                     height: '48dp'
 
+<CaptureARView>:
+    Screen:
+        Camera:
+            id: camera
+            resolution: (1920, 1080)
+            play: True
+            canvas.before:
+                PushMatrix
+                Rotate:
+                    angle: -90
+                    origin: self.center
+            canvas.after:
+                PopMatrix
+
 <Manager>:
     id: screen_manager
 
     login_view: login_view
     register_view: register_view
     principal_view: principal_view
+    capture_ar_view: capture_ar_view
 
     LoginView:
         id: login_view
@@ -301,6 +316,11 @@
         name: "principal_view"
         manager: screen_manager
 
+    CaptureARView:
+        id: capture_ar_view
+        name: "capture_ar_view"
+        manager: screen_manager
+
 <P>:
     Label:
         text: root.text
@@ -312,4 +332,3 @@
         size_hint: 0.8, 0.3
         pos_hint: {"x":0.1, "y":0.1}
         on_release: root.popup.dismiss()
-        # on_press = lambda *args: login.popup_exit.dismiss()

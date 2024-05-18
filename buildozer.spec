@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = MyApplication
+title = SIMG
 
 # (str) Package name
 package.name = myapp
@@ -16,7 +16,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
 # (list) List of inclusions using pattern matching
-#source.include_patterns = assets/*,images/*.png
+source.include_patterns = views/*,views/images/*
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec

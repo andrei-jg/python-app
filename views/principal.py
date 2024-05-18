@@ -12,8 +12,11 @@ class PrincipalView(Screen):
     def on_enter(self):
         # Aquí puedes usar el email para personalizar la vista principal
         payload = { "email": self.user_email }
-        send_uri = api.send_uri(method='GET', payload=payload, uri='get-profile')
+        response_uri= api.send_uri(method='GET', payload=payload, uri='get-profile')
 
-        print(send_uri)
-        self.user_name = send_uri['message']['name']
+        print(response_uri)
+        self.user_name = response_uri['message']['name']
         
+        # Obtener la instancia de LoginView y llamar a start_clock
+        login_view = self.manager.get_screen('login_view')  # 'login_view' es el nombre de la pantalla de login
+        # login_view.start_clock()

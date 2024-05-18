@@ -1,10 +1,9 @@
 # views/login.py
 
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
-from kivy.properties import StringProperty
 
 from views.utils import api
 import os
@@ -25,8 +24,11 @@ class LoginView(Screen):
     def validate_credential(self):
 
         # Si no hay error, pasar el email a PrincipalView
-        self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
-        self.manager.current = 'principal_view'
+        # self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
+        # self.manager.current = 'principal_view'
+        
+        self.manager.current = 'capture_ar_view'
+
         return
 
         payload = {
@@ -34,12 +36,12 @@ class LoginView(Screen):
             "password": self.login_password.text
         }
 
-        send_uri = api.send_uri(method='POST', payload=payload, uri='login')
-        print(send_uri)
+        response_uri= api.send_uri(method='POST', payload=payload, uri='login')
+        print(response_uri)
 
-        if 'error' in send_uri:
+        if 'error' in response_uri:
             show = P()
-            show.text = send_uri['error']
+            show.text = response_uri['error']
 
             popupWindow = Popup(
                 title="Error", 

@@ -5,11 +5,13 @@ from kivymd.app import MDApp
 from views.login import LoginView
 from views.register import RegisterView
 from views.principal import PrincipalView
+from views.cameraKivy import CaptureARView
 
 class Manager(ScreenManager):
     login_view = ObjectProperty(None)
     register_view = ObjectProperty(None)
     principal_view = ObjectProperty(None)
+    capture_ar_view = ObjectProperty(None)
 
 class ScreensApp(MDApp):
     def build(self):

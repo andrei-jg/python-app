@@ -52,8 +52,10 @@ class MyApp(App):
         camera = self.cam
         file_name = self.get_path()
 
-        print(camera.texture.width)
-        print(camera.texture.height)
+        print("camera.texture: ",
+              camera.texture.width,
+              camera.texture.height
+              )
 
         ### 1. Image - Con calidad ###            
 
