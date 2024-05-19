@@ -1,7 +1,7 @@
 # views/login.py
 
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 
@@ -16,6 +16,8 @@ class LoginView(Screen):
     login_user = ObjectProperty()
     login_password = ObjectProperty()
     login_password = ObjectProperty()
+    is_camera_on = BooleanProperty(False)
+
     path_image_login = os.path.join(os.getcwd(), "views/images/vrLogo.png")
 
     def build(self):

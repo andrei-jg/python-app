@@ -280,18 +280,18 @@
                     height: '48dp'
 
 <CaptureARView>:
-    Screen:
+    BoxLayout:
         Camera:
             id: camera
-            resolution: (1920, 1080)
+            resolution: (640, 480)
             play: True
             canvas.before:
                 PushMatrix
                 Rotate:
                     angle: -90
                     origin: self.center
-            canvas.after:
                 PopMatrix
+
 
 <Manager>:
     id: screen_manager
