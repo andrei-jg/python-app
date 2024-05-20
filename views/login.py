@@ -5,7 +5,7 @@ from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 
-from views.utils import api
+from views import utils
 import os
 
 class P(FloatLayout):
@@ -27,18 +27,15 @@ class LoginView(Screen):
 
         # Si no hay error, pasar el email a PrincipalView
         # self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
-        # self.manager.current = 'principal_view'
-        
         self.manager.current = 'capture_ar_view'
-
         return
-
+        
         payload = {
             "email": self.login_user.text,
             "password": self.login_password.text
         }
 
-        response_uri= api.send_uri(method='POST', payload=payload, uri='login')
+        response_uri = utils.send_uri(method='POST', payload=payload, uri='login')
         print(response_uri)
 
         if 'error' in response_uri:

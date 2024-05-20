@@ -3,7 +3,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.properties import StringProperty
 
-from views.utils import api
+from views import utils
 
 class PrincipalView(Screen):
     user_email = StringProperty('')
@@ -12,7 +12,7 @@ class PrincipalView(Screen):
     def on_enter(self):
         # Aquí puedes usar el email para personalizar la vista principal
         payload = { "email": self.user_email }
-        response_uri= api.send_uri(method='GET', payload=payload, uri='get-profile')
+        response_uri= utils.send_uri(method='GET', payload=payload, uri='get-profile')
 
         print(response_uri)
         self.user_name = response_uri['message']['name']

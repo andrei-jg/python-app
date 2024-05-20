@@ -1,11 +1,8 @@
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
-from kivy.uix.widget import Widget
 
-from views.utils import process_image
+from views import utils
 
-import numpy as np
-import cv2
 import time
 
 class CaptureARView(Screen):
@@ -21,18 +18,14 @@ class CaptureARView(Screen):
         super(CaptureARView, self).on_enter(*args)
         # Ahora que la vista está completamente construida, puedes acceder a la instancia de la cámara
         self.camera_instance = self.ids.camera
-        self.manager.current = 'login_view'
+        # self.manager.current = 'login_view'
 
     def update(self, dt):
-        # Verifica si se ha inicializado la instancia de la cámara
         if self.camera_instance:
             # Lee el frame actual de la cámara
-
             camera = self.camera_instance
 
             time_init = time.time()
-            process_image.detect_markers(camera)
-            print("Time: ", time.time() - time_init)
+            utils.detect_markers(camera)
+            print("Total time: ", time.time() - time_init)
             print("\n")
-            
-            ### 1. Image - Con calidad ###            
