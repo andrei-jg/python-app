@@ -290,8 +290,12 @@
                 Rotate:
                     angle: -90
                     origin: self.center
+            canvas.after:
                 PopMatrix
 
+<ShowFrameProcessed>:
+    ProcessedFrame:
+        id: processed_frame
 
 <Manager>:
     id: screen_manager
@@ -300,6 +304,7 @@
     register_view: register_view
     principal_view: principal_view
     capture_ar_view: capture_ar_view
+    processed_frame_view: processed_frame_view
 
     LoginView:
         id: login_view
@@ -319,6 +324,11 @@
     CaptureARView:
         id: capture_ar_view
         name: "capture_ar_view"
+        manager: screen_manager
+
+    ProcessedFrame:
+        id: processed_frame_view
+        name: "processed_frame_view"
         manager: screen_manager
 
 <P>:

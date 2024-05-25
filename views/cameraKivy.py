@@ -18,7 +18,7 @@ class CaptureARView(Screen):
         super(CaptureARView, self).on_enter(*args)
         # Ahora que la vista está completamente construida, puedes acceder a la instancia de la cámara
         self.camera_instance = self.ids.camera
-        # self.manager.current = 'login_view'
+        self.manager.current = 'processed_frame_view'
 
     def update(self, dt):
         if self.camera_instance:
@@ -26,6 +26,7 @@ class CaptureARView(Screen):
             camera = self.camera_instance
 
             time_init = time.time()
-            utils.detect_markers(camera)
+            texture = utils.detect_markers(camera)
+            self.manager.get_screen('processed_frame_view').update_texture(texture)
             print("Total time: ", time.time() - time_init)
-            print("\n")
+            print("")
