@@ -2,10 +2,10 @@ from kivy.utils import platform
 from kivy.uix.camera import Camera
 from kivy.graphics.texture import Texture
 
-import requests, cv2, time, os, json, numpy as np
+import requests, cv2, time, os, json, numpy as np, pickle
 
 url = 'https://andrei00.pythonanywhere.com/api/'
-tamano_real_marcador_cm = 5.0
+marker_real_size = 5.0
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
 parameters = cv2.aruco.DetectorParameters_create()
 
@@ -52,6 +52,16 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
 
     return decoded_response
 
+def read_camera_calibration_params() -> tuple[np.ndarray, np.ndarray]:
+    # Carga el diccionario desde el archivo usando pickle
+    with open('views/extra/calibration_data_pixel.pkl', 'rb') as file:
+        calibration_data = pickle.load(file)
+
+    # Extrae los datos del diccionario
+    camera_matrix: np.ndarray = calibration_data['camera_matrix']
+    dist_coeffs: np.ndarray = calibration_data['dist_coeffs']
+
+    return (camera_matrix, dist_coeffs)
 
 def get_path() -> str:
     timestr = time.strftime("%Y%m%d_%H%M%S")
@@ -66,32 +76,30 @@ def get_path() -> str:
     # return 'IMG.png'
     return file_path
 
-def draw_marker_detected(frame, marker_IDs, marker_corners):
+def draw_marker_detected(frame: cv2.UMat, marker_IDs: any, marker_corners: any, 
+                         coefficients_matrix: np.ndarray, distortion_coefficients: np.ndarray):
+    try:
+        rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners, 0.02, coefficients_matrix, distortion_coefficients)
+        for rvec, tvec in zip(rvecs, tvecs):
 
-    for ids, corners in zip(marker_IDs, marker_corners):
-        tamano_marcador_pixeles = max(np.linalg.norm(corners[0][0] - corners[0][1]),
-                                        np.linalg.norm(corners[0][1] - corners[0][2]))
+            # cv2.drawFrameAxes(frame, coefficients_matrix, distortion_coefficients, rvec, tvec, 0.03)
 
-        tamano_real_marcador = (tamano_real_marcador_cm * tamano_marcador_pixeles) / tamano_marcador_pixeles
+            point_3d = np.array([[0.0332, 0.00, 0.00]], dtype=np.float32)
+            # Proyectar el punto en el sistema de coordenadas de la cámara
+            point_2d, _ = cv2.projectPoints(point_3d, rvec, tvec, coefficients_matrix, distortion_coefficients)
+            
+            # Convertir a enteros para dibujar
+            point_2d = point_2d.reshape(-1, 2)
+            point_2d = tuple(map(int, point_2d[0]))
 
-        # Convertir las coordenadas a enteros
-        org_x, org_y = int(corners[0][0][0]), int(corners[0][0][1])
+            # Dibujar el punto en la imagen
+            cv2.circle(frame, point_2d, 5, (0, 0, 255), -1)
+    except cv2.error as e:
+        print(f"OpenCV error: {e}")    
 
-        print(tamano_marcador_pixeles)
-        print(tamano_real_marcador)
-        print(org_x)
-        print(org_y)
-        print()
-
-        cv2.polylines(frame, [corners.astype(np.int32)], True, (0, 255, 255), 4, cv2.LINE_AA)
-
-        # Mostrar la medida real del marcador en la imagen
-        cv2.putText(frame, f'{tamano_real_marcador:.2f} cm', (org_x, org_y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 2)
-        
     return frame
 
-def detect_markers(camera: Camera, resolution: tuple[int, int]):
+def detect_markers(camera: Camera, resolution: tuple[int, int], matrix, dist):
     """
     Detects markers in the given camera feed at the specified resolution.
 
@@ -115,7 +123,9 @@ def detect_markers(camera: Camera, resolution: tuple[int, int]):
 
     corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(image_gray, aruco_dict, parameters=parameters)
     if corners:
-        image_rgb = draw_marker_detected(image_rgb, ids, corners)
+        # image_rgb = draw_marker_detected(image_rgb, ids, corners)
+        image_rgb = draw_marker_detected(frame=image_rgb, marker_IDs=ids, marker_corners=corners, 
+                                                coefficients_matrix=matrix, distortion_coefficients=dist)
 
     if platform == 'android':
         image_rgb = cv2.resize(image_rgb, (resolution[1], resolution[0]))     #  # (1080, 1920)
