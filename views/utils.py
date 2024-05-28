@@ -8,6 +8,7 @@ url = 'https://andrei00.pythonanywhere.com/api/'
 marker_real_size = 5.0
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
 parameters = cv2.aruco.DetectorParameters_create()
+pixel = False
 
 def send_uri(method: str, payload: dict, endpoint: str) -> dict:
     """
@@ -42,6 +43,9 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
         print(f"An error occurred: {e}")
         raise  # Re-raise the exception after logging
 
+    if endpoint == 'calibration-file':
+        return response
+
     status_code = response.status_code
 
     try:
@@ -53,9 +57,19 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
     return decoded_response
 
 def read_camera_calibration_params() -> tuple[np.ndarray, np.ndarray]:
-    # Carga el diccionario desde el archivo usando pickle
-    with open('views/extra/calibration_data_pixel.pkl', 'rb') as file:
-        calibration_data = pickle.load(file)
+
+    # 3.5
+    # 3.2
+    # 3
+    # 2.8
+    # 2.6
+    # 
+
+    device = "calibration_data_pixel" if pixel else "calibration_data_pc"
+    payload = {"device": device}
+
+    calibration_response = send_uri(method='GET', payload=payload, endpoint='calibration-file')
+    calibration_data = pickle.loads(calibration_response.content)
 
     # Extrae los datos del diccionario
     camera_matrix: np.ndarray = calibration_data['camera_matrix']
@@ -76,26 +90,63 @@ def get_path() -> str:
     # return 'IMG.png'
     return file_path
 
+class KalmanFilter:
+    def __init__(self, process_noise=1e-5, measurement_noise=1e-1, error_estimate=0.1):
+        self.kalman = cv2.KalmanFilter(4, 2)
+        self.kalman.measurementMatrix = np.array([[1, 0, 0, 0],
+                                                  [0, 1, 0, 0]], np.float32)
+        self.kalman.transitionMatrix = np.array([[1, 0, 1, 0],
+                                                 [0, 1, 0, 1],
+                                                 [0, 0, 1, 0],
+                                                 [0, 0, 0, 1]], np.float32)
+        self.kalman.processNoiseCov = np.eye(4, dtype=np.float32) * process_noise
+        self.kalman.measurementNoiseCov = np.eye(2, dtype=np.float32) * measurement_noise
+        self.kalman.errorCovPost = np.eye(4, dtype=np.float32) * error_estimate
+        self.kalman.statePost = np.zeros(4, dtype=np.float32)
+
+    def correct(self, measurement):
+        return self.kalman.correct(np.array(measurement, dtype=np.float32))
+
+    def predict(self):
+        return self.kalman.predict()
+
+# Inicializa el filtro de Kalman
+kf = KalmanFilter()
+
 def draw_marker_detected(frame: cv2.UMat, marker_IDs: any, marker_corners: any, 
                          coefficients_matrix: np.ndarray, distortion_coefficients: np.ndarray):
+    for marker_id in marker_IDs:
+        pass
+        # print(f"Detected marker ID: {marker_id[0]}")
     try:
         rvecs, tvecs, _ = cv2.aruco.estimatePoseSingleMarkers(marker_corners, 0.02, coefficients_matrix, distortion_coefficients)
         for rvec, tvec in zip(rvecs, tvecs):
 
+            # Dibuja los ejes
             # cv2.drawFrameAxes(frame, coefficients_matrix, distortion_coefficients, rvec, tvec, 0.03)
 
-            point_3d = np.array([[0.0332, 0.00, 0.00]], dtype=np.float32)
-            # Proyectar el punto en el sistema de coordenadas de la cámara
+            for rvec, tvec in zip(rvecs, tvecs):
+            # Verificar y corregir el valor del eje Z
+                if tvec[0][2] < 0:
+                    tvec[0][2] = -tvec[0][2]
+                    print(f"Inverted Z detected. Corrected Z: {tvec[0][2]}")
+
+            point_3d = np.array([[0.02, 0.00, 0.00]], dtype=np.float32)
             point_2d, _ = cv2.projectPoints(point_3d, rvec, tvec, coefficients_matrix, distortion_coefficients)
-            
-            # Convertir a enteros para dibujar
             point_2d = point_2d.reshape(-1, 2)
             point_2d = tuple(map(int, point_2d[0]))
 
+            # Aplica el filtro de Kalman
+            filtered_point = kf.correct(point_2d)
+            predicted_point = kf.predict()
+            
+            # Convertir a enteros para dibujar
+            filtered_point = tuple(map(int, filtered_point[:2]))
+            
             # Dibujar el punto en la imagen
-            cv2.circle(frame, point_2d, 5, (0, 0, 255), -1)
+            cv2.circle(frame, filtered_point, 5, (0, 0, 255), -1)
     except cv2.error as e:
-        print(f"OpenCV error: {e}")    
+        print(f"OpenCV error: {e}")
 
     return frame
 
