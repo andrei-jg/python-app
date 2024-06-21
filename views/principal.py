@@ -12,7 +12,7 @@ class PrincipalView(Screen):
     def on_enter(self):
         # Aquí puedes usar el email para personalizar la vista principal
         payload = { "email": self.user_email }
-        response_uri= utils.send_uri(method='GET', payload=payload, uri='get-profile')
+        response_uri= utils.send_uri(method='GET', payload=payload, endpoint='get-profile')
 
         print(response_uri)
         self.user_name = response_uri['message']['name']

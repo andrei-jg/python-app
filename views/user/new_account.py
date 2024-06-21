@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.properties import ObjectProperty, NumericProperty
 
-from views.login import LoginView
+from views.user.login import LoginView
 
 import time
 import threading

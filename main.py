@@ -2,19 +2,15 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.properties import ObjectProperty, NumericProperty
 from kivymd.app import MDApp
 
-from views.login import LoginView
-from views.register import RegisterView
+from views.user.login import LoginView
+from views.user.register import RegisterView
+from views.user.forgot_password import ForgotView
 from views.principal import PrincipalView
 from views.cameraKivy import CaptureARView
 from views.processed_frame import ProcessedFrame
 
 class Manager(ScreenManager):
-    login_view = ObjectProperty(None)
-    register_view = ObjectProperty(None)
-    principal_view = ObjectProperty(None)
-    capture_ar_view = ObjectProperty(None)
-    processed_frame_view = ObjectProperty(None)
-
+    pass
 class ScreensApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"

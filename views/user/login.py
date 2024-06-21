@@ -15,7 +15,6 @@ class P(FloatLayout):
 class LoginView(Screen):
     login_user = ObjectProperty()
     login_password = ObjectProperty()
-    login_password = ObjectProperty()
     is_camera_on = BooleanProperty(False)
 
     path_image_login = os.path.join(os.getcwd(), "views/images/vrLogo.png")
@@ -27,15 +26,13 @@ class LoginView(Screen):
 
         # Si no hay error, pasar el email a PrincipalView
         # self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
-        self.manager.current = 'capture_ar_view'
-        return
-        
+        # self.manager.current = 'capture_ar_view'
         payload = {
             "email": self.login_user.text,
             "password": self.login_password.text
         }
 
-        response_uri = utils.send_uri(method='POST', payload=payload, uri='login')
+        response_uri = utils.send_uri(method='POST', payload=payload, endpoint='login')
         print(response_uri)
 
         if 'error' in response_uri:
@@ -55,3 +52,6 @@ class LoginView(Screen):
         # Si no hay error, pasar el email a PrincipalView
         self.manager.get_screen('principal_view').user_email = self.login_user.text
         self.manager.current = 'principal_view'
+
+    def switch_to_forgot_password(self):
+        self.manager.current = 'forgot_password'
