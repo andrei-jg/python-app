@@ -196,7 +196,7 @@ def get_position_note(note: int, string: int):
     y = float(new_chord[note]['y'])
     z = float(new_chord[note]['z'])
 
-    debug = all_position_chords['debug']
+    debug = all_position_chords['debug_chord']
     if debug:
         x = float(new_chord["1"]['x'])
         y = float(new_chord["1"]['y'])

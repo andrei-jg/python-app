@@ -74,7 +74,7 @@ class CaptureARView(Screen):
                 self.chords_of_title = chord['notes']
 
                 # Esperamos la duración especificada en los datos
-                time.sleep(chord['duration'])
+                time.sleep(chord['time'] * 5)
 
                 # Para efectos de depuración
                 # print(f"Updated chord: {self.chords_of_title}, sleeping for {chord['duration']} seconds")

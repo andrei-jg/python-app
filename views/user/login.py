@@ -16,8 +16,14 @@ class LoginView(Screen):
     login_user = ObjectProperty()
     login_password = ObjectProperty()
     is_camera_on = BooleanProperty(False)
+    debug = BooleanProperty(False)
 
     path_image_login = os.path.join(os.getcwd(), "views/images/vrLogo.png")
+
+    def __init__(self, **kwargs):
+        super(LoginView, self).__init__(**kwargs)
+        response_uri = utils.send_uri(method='GET', payload={}, endpoint='get-position-chords')
+        self.debug = response_uri['message']['debug']
 
     def build(self):
         pass
@@ -26,7 +32,10 @@ class LoginView(Screen):
 
         # Si no hay error, pasar el email a PrincipalView
         # self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
-        # self.manager.current = 'capture_ar_view'
+        if self.debug:
+            self.manager.current = 'capture_ar_view'
+            return
+        
         payload = {
             "email": self.login_user.text,
             "password": self.login_password.text

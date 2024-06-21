@@ -22,6 +22,11 @@ class ForgotView(Screen):
 
     email = ""
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.new_password_field = None  # Almacenar referencia aquí
+
+
     def build(self):
         pass
 
@@ -55,6 +60,7 @@ class ForgotView(Screen):
                 print(response)
 
                 self.pop_message(message=message)
+                self.switch_to_login()
 
     def switch_to_login(self):
         self.hint_text = "Correo"
@@ -89,11 +95,10 @@ class ForgotView(Screen):
             pos_hint={'center_x': 0.5},
             password=True
         )
+        self.new_password_field = new_field  # Almacenar referencia
         return new_field
     
     def delete_password_field(self) -> None:
-
-        try:
-            self.new_password_user.container_layout.remove_widget(self.ids.new_password_user)
-        except:
-            pass
+        if self.new_password_field:
+            self.ids.new_password_user.remove_widget(self.new_password_field)
+            self.new_password_field = None  # Limpiar la referencia
