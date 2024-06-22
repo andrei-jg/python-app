@@ -65,6 +65,8 @@ class ForgotView(Screen):
     def switch_to_login(self):
         self.hint_text = "Correo"
         self.button_text = "Recuperar contraseña"
+        self.login_user.text = ""
+        self.new_password_user.text = ""
         self.delete_password_field()
 
         self.manager.current = 'login_view'
@@ -87,7 +89,7 @@ class ForgotView(Screen):
         new_field = MDTextField(
             id='new_password',
             mode='round',
-            hint_text="Contraseña",
+            hint_text="Nueva contraseña",
             icon_right='eye-off',
             size_hint=(0.95, None),
             height='48dp',

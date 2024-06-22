@@ -44,7 +44,7 @@
                 mode: 'round'
                 id: user
                 hint_text: 'Correo'
-                icon_right: 'account'
+                icon_right: 'at'
                 size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
                 font_size: '16sp'
@@ -86,7 +86,6 @@
                     height: '48dp'
                     on_press: 
                         root.validate_credential()
-                        
 
                 MDRoundFlatButton:
                     text: 'Olvidé mi cuenta'
@@ -96,6 +95,16 @@
                     height: '48dp'
                     on_press: 
                         root.switch_to_forgot_password()
+            
+            MDTextButton:
+                text: '¿No tienes cuenta?'
+                font_size: '14sp'
+                size_hint: 0.6, None
+                size_hint_y: None
+                height: '48dp'
+                pos_hint: {'center_x': 0.5}
+                on_press: 
+                    root.switch_to_register_view()
 
 <ForgotView>:
     login_user: user
@@ -140,11 +149,25 @@
                 size_hint_y: None
                 height: '10dp'  # Spacer adjusted to a relative size
 
+            MDLabel:
+                id: welcome_label
+                text: 'Resetear contraseña'
+                font_size: '14sp'  # Use sp for font size for scalability
+                halign: 'left'
+                size_hint_y: None
+                height: self.texture_size[1]
+                # padding_y: '-3dp'
+                bold: True
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
             MDTextField:
                 mode: 'round'
                 id: user
                 hint_text: root.hint_text
-                icon_right: 'account'
+                icon_right: 'at'
                 size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
                 font_size: '16sp'
@@ -191,8 +214,11 @@
                     on_press: 
                         root.switch_to_login()
 
-
 <RegisterView>:        
+    name_user: name_user
+    email_user: email_user
+    password_user: password_user
+
     Screen:
         MDCard:
             size_hint: 0.9, None  # Adjust the width relative to the screen size
@@ -204,7 +230,7 @@
             orientation: 'vertical'
 
             Image:
-                source: 'views/images/vrLogo.png'
+                source: root.path_image_login
                 size_hint: None, None
                 size: '170dp', '170dp'  # Adjust size as needed
                 pos_hint: {'center_x': 0.5}
@@ -220,7 +246,6 @@
                 bold: True
 
             MDLabel:
-                
                 text: "Clásica"
                 halign: 'right'  # Alinea el texto horizontalmente al centro
                 size_hint_y: None  # Fuerza al MDLabel a tener una altura específica
@@ -233,10 +258,24 @@
                 size_hint_y: None
                 height: '10dp'  # Spacer adjusted to a relative size
 
+            MDLabel:
+                id: welcome_label
+                text: 'Crear cuenta'
+                font_size: '14sp'  # Use sp for font size for scalability
+                halign: 'left'
+                size_hint_y: None
+                height: self.texture_size[1]
+                # padding_y: '-3dp'
+                bold: True
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
             MDTextField:
                 mode: 'round'
-                id: user
-                hint_text: 'Correo'
+                id: name_user
+                hint_text: "Nombre y Apellido"
                 icon_right: 'account'
                 size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
@@ -249,8 +288,22 @@
 
             MDTextField:
                 mode: 'round'
-                id: password
-                hint_text: ''
+                id: email_user
+                hint_text: "Correo"
+                icon_right: 'at'
+                size_hint: 0.95, None  # Adjust the size relatively
+                height: '48dp'
+                font_size: '16sp'
+                pos_hint: {'center_x': 0.5}
+
+            Widget:
+                size_hint_y: None
+                height: '10dp'  # Spacer adjusted to a relative size
+
+            MDTextField:
+                mode: 'round'
+                id: password_user
+                hint_text: 'Contraseña'
                 icon_right: 'eye-off'
                 size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
@@ -260,7 +313,7 @@
 
             Widget:
                 size_hint_y: None
-                height: '20dp'  # Spacer adjusted to a relative size
+                height: '10dp'  # Spacer adjusted to a relative size
 
             MDBoxLayout:
                 size_hint_y: None
@@ -272,21 +325,22 @@
                 orientation: 'horizontal'
 
                 MDRoundFlatButton:
-                    text: 'Iniciar Sesión'
+                    text: "Crear cuenta"
                     font_size: '14sp'
                     size_hint: 0.3, None  # Adjust the size relatively
                     size_hint_y: None  # Use size_hint_y to allow height scaling
                     height: '48dp'
                     on_press: 
-                        root.switch()
-                        root.manager.current = "register_view"
-
+                        root.create_account()
+                        
                 MDRoundFlatButton:
-                    text: 'Olvidé mi cuenta'
+                    text: 'Regresar'
                     font_size: '14sp'
                     size_hint: 0.3, None  # Adjust the size relatively
                     size_hint_y: None  # Use size_hint_y to allow height scaling
                     height: '48dp'
+                    on_press: 
+                        root.switch_to_login()
 
 <PrincipalView>:        
     Screen:
@@ -325,7 +379,7 @@
                 mode: 'round'
                 id: user
                 hint_text: 'Correo'
-                icon_right: 'account'
+                icon_right: 'at'
                 size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
                 font_size: '16sp'

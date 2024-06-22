@@ -271,6 +271,7 @@ def get_path() -> str:
 
 def draw_marker_detected(frame: cv2.UMat, marker_IDs: any, marker_corners: any, 
                          coefficients_matrix: np.ndarray, distortion_coefficients: np.ndarray, chord: str):
+    global all_position_chords
     for marker_id in marker_IDs:
         pass
         # print(f"Detected marker ID: {marker_id[0]}")
@@ -279,7 +280,8 @@ def draw_marker_detected(frame: cv2.UMat, marker_IDs: any, marker_corners: any,
         for rvec, tvec in zip(rvecs, tvecs):
 
             # Dibuja los ejes
-            # cv2.drawFrameAxes(frame, coefficients_matrix, distortion_coefficients, rvec, tvec, 0.03)
+            if all_position_chords['draw_axis']:
+                cv2.drawFrameAxes(frame, coefficients_matrix, distortion_coefficients, rvec, tvec, 0.03)
 
             for rvec, tvec in zip(rvecs, tvecs):
             # Verificar y corregir el valor del eje Z
@@ -372,9 +374,7 @@ def wrap_text(text: str, max_words: int) -> str:
     
     return '\n'.join(lines)
 
-def get_pop_up_size():
-
-    print("get_pop_up_size: ", pop_up_size)
+def get_pop_up_size() -> tuple[int, int]:
 
     if platform == 'android':
         return pop_up_size

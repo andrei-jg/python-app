@@ -65,3 +65,6 @@ class LoginView(Screen):
 
     def switch_to_forgot_password(self):
         self.manager.current = 'forgot_password'
+
+    def switch_to_register_view(self):
+        self.manager.current = 'register_view'
