@@ -9,6 +9,7 @@ aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
 parameters = cv2.aruco.DetectorParameters_create()
 pixel = True
 thread_flag = False
+pop_up_size = (0,0)
 
 # from control_time import TimeCounter
 # time_counter = TimeCounter()
@@ -370,6 +371,15 @@ def wrap_text(text: str, max_words: int) -> str:
         lines.append(' '.join(current_line))
     
     return '\n'.join(lines)
+
+def get_pop_up_size():
+
+    print("get_pop_up_size: ", pop_up_size)
+
+    if platform == 'android':
+        return pop_up_size
+    else:
+        return (300, 250)
 
 if __name__ != "__main__":
     chords = send_uri("GET", [], "get-diagram-guitar")['message']

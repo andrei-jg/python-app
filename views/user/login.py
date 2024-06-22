@@ -22,16 +22,17 @@ class LoginView(Screen):
 
     def __init__(self, **kwargs):
         super(LoginView, self).__init__(**kwargs)
-        response_uri = utils.send_uri(method='GET', payload={}, endpoint='get-position-chords')
-        self.debug = response_uri['message']['debug']
+        response_get_position_chords = utils.send_uri(method='GET', payload={}, endpoint='get-position-chords')
+        response_pop_up_size = utils.send_uri(method='GET', payload={}, endpoint='get-resolution')['message']
+        
+        utils.pop_up_size = (response_pop_up_size['pop_up_android_x'], response_pop_up_size['pop_up_android_y'])
+        self.debug = response_get_position_chords['message']['debug']
 
     def build(self):
         pass
 
     def validate_credential(self):
 
-        # Si no hay error, pasar el email a PrincipalView
-        # self.manager.get_screen('principal_view').user_email = 'a.jimenezgr@gmail.com'
         if self.debug:
             self.manager.current = 'capture_ar_view'
             return
@@ -41,18 +42,18 @@ class LoginView(Screen):
             "password": self.login_password.text
         }
 
-        response_uri = utils.send_uri(method='POST', payload=payload, endpoint='login')
-        print(response_uri)
+        response_login = utils.send_uri(method='POST', payload=payload, endpoint='login')
+        print(response_login)
 
-        if 'error' in response_uri:
+        if 'error' in response_login:
             show = P()
-            show.text = response_uri['error']
+            show.text = response_login['error']
 
             popupWindow = Popup(
                 title="Error", 
                 content=show, 
                 size_hint=(None, None),
-                size=(300, 250))
+                size=utils.get_pop_up_size())
             
             show.popup = popupWindow
             popupWindow.open()

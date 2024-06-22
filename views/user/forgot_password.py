@@ -77,7 +77,7 @@ class ForgotView(Screen):
             title="", 
             content=show, 
             size_hint=(None, None),
-            size=(400, 250))
+            size=utils.get_pop_up_size())
         
         show.popup = popupWindow
         popupWindow.open()

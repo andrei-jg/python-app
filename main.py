@@ -9,9 +9,11 @@ from views.principal import PrincipalView
 from views.cameraKivy import CaptureARView
 from views.processed_frame import ProcessedFrame
 
+from views import utils
 class Manager(ScreenManager):
     pass
 class ScreensApp(MDApp):
+
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "BlueGray"
