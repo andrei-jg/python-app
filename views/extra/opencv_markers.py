@@ -1,6 +1,6 @@
 import os, sys, cv2, numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import utils, calibration_camera
+import views.utils.utils as utils, calibration_camera
 
 pixel = utils.pixel
 cap = cv2.VideoCapture(2) if pixel else cv2.VideoCapture(0)

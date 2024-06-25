@@ -9,7 +9,7 @@ from views.principal import PrincipalView
 from views.cameraKivy import CaptureARView
 from views.processed_frame import ProcessedFrame
 
-from views import utils
+from views.utils import utils
 class Manager(ScreenManager):
     pass
 class ScreensApp(MDApp):

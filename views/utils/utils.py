@@ -11,9 +11,11 @@ pixel = True
 thread_flag = False
 pop_up_size = (0,0)
 
-# from control_time import TimeCounter
-# time_counter = TimeCounter()
+email_user, name_user, message_main = "", "", ""
 
+# Variables que se estarán alternando dependiendo la canción
+global_title = "rem-losing_my_religion.json"
+multipler_time = 1.0
 
 def send_uri(method: str, payload: dict, endpoint: str) -> dict:
     """
@@ -53,6 +55,15 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
     except json.JSONDecodeError:
         decoded_response = {}  # Handle cases where the response is not JSON
     decoded_response['status_code'] = status_code
+
+    print("")
+    print("----")
+    print("Endpoint:", endpoint)
+    print("Método:", method)
+    print("Payload enviado: ", payload)
+    print("Response: ", decoded_response)
+    print("----")
+    print("")
 
     return decoded_response
 
@@ -380,6 +391,42 @@ def get_pop_up_size() -> tuple[int, int]:
         return pop_up_size
     else:
         return (300, 250)
+    
+def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, total_time: float) -> str:
+
+    global multipler_time
+    time_elapsed = time.time() - time_elapsed 
+    tempo: int = all_song_chords['message']['tempo']
+    chords_data = all_song_chords['message']['tracks'][1]["Guitar 2"]
+
+    if time_elapsed > total_time:
+        return 'end'
+
+    song_elapsed = 0.0
+
+    print(time_elapsed)
+
+    for chord in chords_data:
+        # Operación para calcular en segundos la duración del acorde - nota
+        seconds = chord['time'] * 60 / tempo
+        song_elapsed += seconds
+        # print(chord, seconds, song_elapsed)
+        if song_elapsed > time_elapsed:
+            return chord['notes']
+
+def get_total_time(all_song_chords: dict) -> float:
+
+    global multipler_time
+    tempo: int = all_song_chords['message']['tempo']
+    chords_data = all_song_chords['message']['tracks'][1]["Guitar 2"]
+
+    song_elapsed = 0.0
+    for chord in chords_data:
+        # Operación para calcular en segundos la duración del acorde - nota
+        seconds = (chord['time'] * 60 / tempo) * multipler_time
+        song_elapsed += seconds
+        
+    return song_elapsed
 
 if __name__ != "__main__":
     chords = send_uri("GET", [], "get-diagram-guitar")['message']
@@ -387,15 +434,11 @@ if __name__ != "__main__":
 
 if __name__ == "__main__":
 
-    print(wrap_text('Se ha enviado un código de seguridad al correo electrónico', 5))
+    chords_data = send_uri('GET', {"song": global_title}, 'get-song')
 
-    payload = {
-        "email": "a.jimenezgr@gmail.com",
-        "password": "Mexico.11"
-    }
-
-    response_uri = send_uri(method='POST', payload=payload, endpoint='login')
-    print(response_uri)
+    for numero in np.arange(1.50, 4.51, 0.1):
+        print(return_actual_chord_by_time(numero, chords_data))
+        print()
 
     ## print(time_counter.get_time())
     pass

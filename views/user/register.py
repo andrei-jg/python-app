@@ -5,7 +5,7 @@ from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 
-from views import utils
+from views.utils import utils
 import os
 
 class P(FloatLayout):

@@ -1,6 +1,6 @@
 import threading
 import time
-import utils
+import views.utils.utils as utils
 
 class TimeCounter:
     """

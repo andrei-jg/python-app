@@ -1,22 +1,76 @@
 # views/principal.py
 
 from kivy.uix.screenmanager import Screen
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, BooleanProperty
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.popup import Popup
 
-from views import utils
+from views.utils import utils
+from views.utils.pop_up_kivy import PopupContent
+
+class P(FloatLayout):
+    popup = None  # Variable para almacenar la referencia al Popup
+    text = StringProperty()
 
 class PrincipalView(Screen):
     user_email = StringProperty('')
     user_name = StringProperty('')
+    run_ar_active = BooleanProperty(False)
 
     def on_enter(self):
-        # Aquí puedes usar el email para personalizar la vista principal
-        payload = { "email": self.user_email }
-        response_uri= utils.send_uri(method='GET', payload=payload, endpoint='get-profile')
+        pass
 
-        print(response_uri)
-        self.user_name = response_uri['message']['name']
+    def select_song(self):
+        self.run_ar_active = True
+        self.pop_message_method(message='', method='get_songs')
         
-        # Obtener la instancia de LoginView y llamar a start_clock
-        login_view = self.manager.get_screen('login_view')  # 'login_view' es el nombre de la pantalla de login
-        # login_view.start_clock()
+    def run_set_interval_time(self, instance):
+        self.manager.current = 'capture_ar_view'
+        return
+        self.run_ar_active = False  
+        self.pop_message_method(message='', method='get_songs')
+    
+    def run_instructions(self):
+        print("run_instructions action")
+
+    def run_history(self):
+        self.pop_message_method(message='', method='history')
+
+    def run_new_password(self):
+        # self.pop_message_method(message='Nueva contraseña', method='password')
+        self.pop_message_method(message='Nueva contraseña', method='set_speed')
+
+    def run_logout(self):
+        self.manager.current = 'login_view'
+
+    def pop_message_method(self, message: str, method: str):
+        content = PopupContent(message, method)
+
+        popupWindow = Popup(
+            title="", 
+            content=content, 
+            size_hint=(None, None),
+            size=utils.get_pop_up_size())
+        
+        content.popup = popupWindow
+        popupWindow.bind(on_dismiss=self.pop_message)  # Vincula el evento on_dismiss
+
+        if self.run_ar_active:
+            popupWindow.bind(on_dismiss=self.run_set_interval_time)
+
+        popupWindow.open()
+
+    def pop_message(self, instance):
+        if utils.message_main == '':
+            return
+        show = P()
+        show.text = utils.wrap_text(utils.message_main, 5)
+
+        popupWindow = Popup(
+            title="", 
+            content=show, 
+            size_hint=(None, None),
+            size=utils.get_pop_up_size())
+        
+        show.popup = popupWindow
+        popupWindow.open()

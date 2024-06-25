@@ -4,7 +4,7 @@ from kivy.properties import ObjectProperty, StringProperty, ListProperty
 from kivy.uix.popup import Popup
 from kivymd.uix.textfield import MDTextField
 
-from views import utils
+from views.utils import utils
 
 import os
 

@@ -375,34 +375,16 @@
                 size_hint_y: None
                 height: '10dp'  # Spacer adjusted to a relative size
 
-            MDTextField:
-                mode: 'round'
-                id: user
-                hint_text: 'Correo'
-                icon_right: 'at'
-                size_hint: 0.95, None  # Adjust the size relatively
-                height: '48dp'
-                font_size: '16sp'
-                pos_hint: {'center_x': 0.5}
-
-            Widget:
+            MDFillRoundFlatIconButton:
+                text: '¡Practicar Ahora!'
+                font_size: '14sp'
+                icon: 'guitar-acoustic'  # Reemplaza 'icon_name' con el nombre del ícono que deseas usar
+                size_hint_x: 1
                 size_hint_y: None
-                height: '10dp'  # Spacer adjusted to a relative size
-
-            MDTextField:
-                mode: 'round'
-                id: password
-                hint_text: ''
-                icon_right: 'eye-off'
-                size_hint: 0.95, None  # Adjust the size relatively
                 height: '48dp'
-                font_size: '16sp'
                 pos_hint: {'center_x': 0.5}
-                password: True
-
-            Widget:
-                size_hint_y: None
-                height: '20dp'  # Spacer adjusted to a relative size
+                on_press: 
+                    root.select_song()
 
             MDBoxLayout:
                 size_hint_y: None
@@ -413,22 +395,122 @@
                 padding: '10dp'
                 orientation: 'horizontal'
 
-                MDRoundFlatButton:
-                    text: 'Iniciar Sesión'
-                    font_size: '14sp'
-                    size_hint: 0.3, None  # Adjust the size relatively
-                    size_hint_y: None  # Use size_hint_y to allow height scaling
-                    height: '48dp'
-                    on_press: 
-                        root.switch()
-                        root.manager.current = "register_view"
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1.05
+                    spacing: '0dp'
+                    pos_hint: {'center_x': 0.5}
+                    padding: '10dp'
+                    orientation: 'vertical'
 
-                MDRoundFlatButton:
-                    text: 'Olvidé mi cuenta'
-                    font_size: '14sp'
-                    size_hint: 0.3, None  # Adjust the size relatively
-                    size_hint_y: None  # Use size_hint_y to allow height scaling
-                    height: '48dp'
+                    MDIconButton:
+                        icon: 'note-check'  # Reemplaza 'icon_name' con el nombre del ícono que deseas usar
+                        user_font_size: '24sp'  # Ajusta el tamaño del ícono según sea necesario
+                        theme_text_color: 'Custom'
+                        text_color: 1, 1, 1, 1  # Ajusta el color del ícono (aquí está en blanco)
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_instructions()
+
+                    MDTextButton:
+                        text: 'Instrucciones'
+                        font_size: '14sp'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_instructions()
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1.05
+                    spacing: '0dp'
+                    pos_hint: {'center_x': 0.5}
+                    padding: '10dp'
+                    orientation: 'vertical'
+
+                    MDIconButton:
+                        icon: 'history'  # Reemplaza 'icon_name' con el nombre del ícono que deseas usar
+                        user_font_size: '24sp'  # Ajusta el tamaño del ícono según sea necesario
+                        theme_text_color: 'Custom'
+                        text_color: 1, 1, 1, 1  # Ajusta el color del ícono (aquí está en blanco)
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_history()
+
+                    MDTextButton:
+                        text: 'Historial'
+                        font_size: '14sp'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_history()
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: self.minimum_height
+                size_hint_x: 1.05
+                spacing: '10dp'
+                pos_hint: {'center_x': 0.5}
+                padding: '10dp'
+                orientation: 'horizontal'
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1.05
+                    spacing: '0dp'
+                    pos_hint: {'center_x': 0.5}
+                    padding: '10dp'
+                    orientation: 'vertical'
+
+                    MDIconButton:
+                        icon: 'account-edit'  # Reemplaza 'icon_name' con el nombre del ícono que deseas usar
+                        user_font_size: '24sp'  # Ajusta el tamaño del ícono según sea necesario
+                        theme_text_color: 'Custom'
+                        text_color: 1, 1, 1, 1  # Ajusta el color del ícono (aquí está en blanco)
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_new_password()
+
+                    MDTextButton:
+                        text: 'Nueva contraseña'
+                        font_size: '14sp'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_new_password()
+
+                MDBoxLayout:
+                    size_hint_y: None
+                    height: self.minimum_height
+                    size_hint_x: 1.05
+                    spacing: '0dp'
+                    pos_hint: {'center_x': 0.5}
+                    padding: '10dp'
+                    orientation: 'vertical'
+
+                    MDIconButton:
+                        icon: 'logout'  # Reemplaza 'icon_name' con el nombre del ícono que deseas usar
+                        user_font_size: '24sp'  # Ajusta el tamaño del ícono según sea necesario
+                        theme_text_color: 'Custom'
+                        text_color: 1, 1, 1, 1  # Ajusta el color del ícono (aquí está en blanco)
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_logout()
+
+                    MDTextButton:
+                        text: 'Cerrar sesión'
+                        font_size: '14sp'
+                        size_hint_y: None
+                        height: self.texture_size[1]
+                        pos_hint: {'center_x': 0.5}
+                        on_press: 
+                            root.run_logout()
 
 <CaptureARView>:
     BoxLayout:
