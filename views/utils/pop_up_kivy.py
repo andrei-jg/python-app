@@ -35,7 +35,8 @@ class PopupContent(BoxLayout):
             hint_text="Contraseña", 
             password=True, 
             multiline=False,
-            icon_right='eye-off')
+            icon_right='eye-off',
+            height=100)
         self.add_widget(self.text_input)
         self.confirm_button = Button(text="Confirmar")
         self.confirm_button.bind(on_press=self.change_password_service)
@@ -58,13 +59,13 @@ class PopupContent(BoxLayout):
     def set_get_songs(self):
         response = self.get_all_song_service()
 
-        scroll_view = ScrollView(size_hint=(1, None), size=(180, 150))
+        scroll_view = ScrollView(size_hint=(1, None), size=(50, 400))
         grid_layout = GridLayout(cols=1, padding=10, spacing=10, size_hint_y=None)
         grid_layout.bind(minimum_height=grid_layout.setter('height'))
 
         # Añadir elementos al GridLayout
         for song in response:  # Puedes cambiar el rango para agregar más elementos
-            btn = Button(text=f'{song["title"]}', size_hint_y=None, height=40)
+            btn = Button(text=f'{song["title"]}', size_hint_y=None, height=100)
             btn.song_id = song['filename']  # Añadir una propiedad personalizada
             btn.bind(on_release=self.set_global_title)
             grid_layout.add_widget(btn)

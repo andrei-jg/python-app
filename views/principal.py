@@ -22,7 +22,7 @@ class PrincipalView(Screen):
 
     def select_song(self):
         self.run_ar_active = True
-        self.pop_message_method(message='', method='get_songs')
+        self.pop_message_method(message='Selecciona 1 canción', method='get_songs')
         
     def run_set_interval_time(self, instance):
         self.manager.current = 'capture_ar_view'
@@ -37,8 +37,8 @@ class PrincipalView(Screen):
         self.pop_message_method(message='', method='history')
 
     def run_new_password(self):
-        # self.pop_message_method(message='Nueva contraseña', method='password')
-        self.pop_message_method(message='Nueva contraseña', method='set_speed')
+        self.pop_message_method(message='Nueva contraseña', method='password')
+        # self.pop_message_method(message='Nueva contraseña', method='set_speed')
 
     def run_logout(self):
         self.manager.current = 'login_view'
@@ -46,11 +46,12 @@ class PrincipalView(Screen):
     def pop_message_method(self, message: str, method: str):
         content = PopupContent(message, method)
 
+        size = utils.get_pop_up_size() if method != 'get_songs' else (utils.get_pop_up_size()[0], utils.get_pop_up_size()[1] + 300)
         popupWindow = Popup(
             title="", 
             content=content, 
             size_hint=(None, None),
-            size=utils.get_pop_up_size())
+            size=size)
         
         content.popup = popupWindow
         popupWindow.bind(on_dismiss=self.pop_message)  # Vincula el evento on_dismiss
