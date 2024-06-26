@@ -59,7 +59,7 @@ class PopupContent(BoxLayout):
     def set_get_songs(self):
         response = self.get_all_song_service()
 
-        scroll_view = ScrollView(size_hint=(1, None), size=(50, 400))
+        scroll_view = ScrollView(size_hint=(1, None), size=(50, 580))
         grid_layout = GridLayout(cols=1, padding=10, spacing=10, size_hint_y=None)
         grid_layout.bind(minimum_height=grid_layout.setter('height'))
 
@@ -81,34 +81,35 @@ class PopupContent(BoxLayout):
         print(f'Selected: {button.text}, ID: {button.song_id}')
         # self.popup.dismiss()
 
-    def test(self):
-        pass
-
     def set_speed(self):
 
-        button_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50, pos_hint= {'center_x': 0.5})
+        button_layout = BoxLayout(orientation='horizontal', pos_hint= {'center_x': 0.7})
 
-        low = MDIconButton(icon='speedometer-slow', pos_hint={'center_x': 0.5})
-        low.bind(on_release=lambda x: self.on_button_press('button1'))
+        low = MDIconButton(icon='tortoise')
+        low.bind(on_release=lambda x: self.on_button_press('low'))
 
-        normal = MDIconButton(icon='speedometer-medium', pos_hint={'center_x': 0.5})
-        normal.bind(on_release=lambda x: self.on_button_press('button1'))
+        normal = MDIconButton(icon='speedometer-medium')
+        normal.bind(on_release=lambda x: self.on_button_press('normal'))
 
-        up = MDIconButton(icon='speedometer-medium', pos_hint={'center_x': 0.5})
-        up.bind(on_release=lambda x: self.on_button_press('button1'))
+        up = MDIconButton(icon='rabbit')
+        up.bind(on_release=lambda x: self.on_button_press('up'))
         
         button_layout.add_widget(low)
         button_layout.add_widget(normal)
         button_layout.add_widget(up)
 
-        # Alineación de los botones horizontalmente en el centro
-        button_layout.pos_hint = {'center_x': 0.5}
-
-        # Agregar el BoxLayout horizontal al layout principal
         self.add_widget(button_layout)
 
-        # Ejecutar la función según el modo
-
+    def on_button_press(self, txt_button: str):
+        key_speed = {
+            'low': 1.6,
+            'normal': 1.0,
+            'up': 0.7
+        }
+        utils.multipler_time = key_speed.get(txt_button)
+        utils.message_main = 'Start AR'
+        self.popup.dismiss()
+        
         
     def change_password_service(self, instance):
         payload = {'email': utils.email_user, 'new_password': self.text_input.text, 'challenge': False}

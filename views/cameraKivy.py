@@ -35,7 +35,7 @@ class CaptureARView(Screen):
             if key in track:
                 self.chord_by_song = track[key]
         
-        self.total_time_song = utils.get_total_time(self.chord_by_song, self.tempo)
+        self.total_time_song: float = utils.get_total_time(self.chord_by_song, self.tempo)
 
     def on_leave(self, *args):
         super(CaptureARView, self).on_leave(*args)
@@ -52,7 +52,7 @@ class CaptureARView(Screen):
             # Lee el frame actual de la cámara
             camera = self.camera_instance
             actual_chord = utils.return_actual_chord_by_time(self.time_init, self.chord_by_song, self.total_time_song, self.tempo)
-            if actual_chord != 'end':
+            if actual_chord != 'end' and actual_chord != None:
                 texture = utils.detect_markers(camera, self.resolution, self.matrix, self.dist, actual_chord)
                 self.manager.get_screen('processed_frame_view').update_texture(texture)
             else:

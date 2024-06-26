@@ -15,7 +15,7 @@ class P(FloatLayout):
 class PrincipalView(Screen):
     user_email = StringProperty('')
     user_name = StringProperty('')
-    run_ar_active = BooleanProperty(False)
+    run_ar_active = False
 
     def on_enter(self):
         pass
@@ -25,10 +25,8 @@ class PrincipalView(Screen):
         self.pop_message_method(message='Selecciona 1 canción', method='get_songs')
         
     def run_set_interval_time(self, instance):
-        self.manager.current = 'capture_ar_view'
-        return
         self.run_ar_active = False  
-        self.pop_message_method(message='', method='get_songs')
+        self.pop_message_method(message='Selecciona la velocidad', method='set_speed')
     
     def run_instructions(self):
         print("run_instructions action")
@@ -38,7 +36,6 @@ class PrincipalView(Screen):
 
     def run_new_password(self):
         self.pop_message_method(message='Nueva contraseña', method='password')
-        # self.pop_message_method(message='Nueva contraseña', method='set_speed')
 
     def run_logout(self):
         self.manager.current = 'login_view'
@@ -64,6 +61,11 @@ class PrincipalView(Screen):
     def pop_message(self, instance):
         if utils.message_main == '':
             return
+        if utils.message_main == 'Start AR':
+            utils.message_main = ''
+            self.manager.current = 'capture_ar_view'
+            return
+
         show = P()
         show.text = utils.wrap_text(utils.message_main, 5)
 

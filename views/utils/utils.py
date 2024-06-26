@@ -56,14 +56,14 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
         decoded_response = {}  # Handle cases where the response is not JSON
     decoded_response['status_code'] = status_code
 
-    print("")
-    print("----")
-    print("Endpoint:", endpoint)
-    print("Método:", method)
-    print("Payload enviado: ", payload)
-    print("Response: ", decoded_response)
-    print("----")
-    print("")
+    # print("")
+    # print("----")
+    # print("Endpoint:", endpoint)
+    # print("Método:", method)
+    # print("Payload enviado: ", payload)
+    # print("Response: ", decoded_response)
+    # print("----")
+    # print("")
 
     return decoded_response
 
@@ -87,6 +87,7 @@ def find_chord(input_notes: str) -> str | None:
         if value == "chord":
             return best_match
 
+        # print(input_notes)
         chord_notes = str(value['chord'])
         chord_notes = chord_notes.split(',')
         input_notes_list = input_notes.split(',')
@@ -410,10 +411,11 @@ def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, tota
     song_elapsed = 0.0
     for chord in all_song_chords:
         # Operación para calcular en segundos la duración del acorde - nota
-        seconds = chord['time'] * 60 / tempo
+        seconds = (chord['time'] * multipler_time) * 60 / tempo
         song_elapsed += seconds
         # print(chord, seconds, song_elapsed)
-        if song_elapsed > time_elapsed:
+        if song_elapsed >= time_elapsed:
+            print(song_elapsed, chord['notes'], time_elapsed)
             return chord['notes']
 
 def get_total_time(all_song_chords: dict, tempo: int) -> float:
@@ -430,9 +432,8 @@ def get_total_time(all_song_chords: dict, tempo: int) -> float:
     song_elapsed = 0.0
 
     for chord in all_song_chords:
-        print(chord)
         # Operación para calcular en segundos la duración del acorde - nota
-        seconds = (chord['time'] * 60 / tempo) * multipler_time
+        seconds = (chord['time'] * multipler_time) * 60 / tempo
         song_elapsed += seconds
         
     return song_elapsed
