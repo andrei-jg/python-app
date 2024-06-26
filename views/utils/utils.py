@@ -193,8 +193,6 @@ def draw_chord(actual_chord: str) -> cv2.UMat:
     if platform == 'android':
         img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
-    cv2.imwrite('test.png', img)
-
     return img
 
 def get_position_note(note: int, string: int):
@@ -456,6 +454,13 @@ def set_chords_by_song(chord_by_song: dict, key: str) -> dict:
             chord_by_song = track[key]
 
     return chord_by_song
+
+def get_resolution_camera_root() -> tuple[int, int]:
+
+    if platform == 'android':
+        return (640, 480)
+    else:
+        return (640, 360)
 
 if __name__ != "__main__":
     chords = send_uri("GET", [], "get-diagram-guitar")['message']

@@ -10,6 +10,7 @@ class CaptureARView(Screen):
         data_resolution = utils.send_uri(method='GET', payload=[], endpoint='get-resolution')['message']
         self.resolution = (data_resolution['height'], data_resolution['weight'])
         self.matrix, self.dist = utils.read_camera_calibration_params()
+        self.camera_resolution = utils.get_resolution_camera_root()
         
         # Se instancia la cámara
         self.camera_instance = None
