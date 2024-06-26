@@ -14,7 +14,7 @@ pop_up_size = (0,0)
 email_user, name_user, message_main = "", "", ""
 
 # Variables que se estarán alternando dependiendo la canción
-global_title = "rem-losing_my_religion.json"
+global_title = "10_Soda Stereo - De Música Ligera (ver 2).json"
 multipler_time = 1.0
 
 def send_uri(method: str, payload: dict, endpoint: str) -> dict:
@@ -79,7 +79,7 @@ def find_chord(input_notes: str) -> str | None:
     """
     global chords
     best_match = None
-    min_matches = 3  # Minimum exact matches required
+    min_matches = 4  # Minimum exact matches required
     min_difference = float('inf')
 
     for chord, value in chords.items():
@@ -133,13 +133,13 @@ def center_text(text: str, start_x: int, start_y: int):
     
     return text_x, text_y
 
-def draw_chord(chord_name: str, chord_data: dict) -> cv2.UMat:
+def draw_chord(actual_chord: str) -> cv2.UMat:
     """
     Dibuja un diagrama de acorde.
 
     Args:
-        nombre_acorde (str): Nombre del acorde.
-        datos_acorde (dict): Diccionario que contiene información del acorde y los dedos.
+        actual_chord (str): Nombre del acorde.
+        diagram_chords_data (dict): Diccionario que contiene información del acorde y los dedos.
     """
     # Create a blank white image
     img = np.ones((200, 200, 3), np.uint8) * 255
@@ -161,8 +161,18 @@ def draw_chord(chord_name: str, chord_data: dict) -> cv2.UMat:
         cv2.line(img, (start_x, y), (start_x + width, y), (0, 0, 0), 2)
 
     # Draw chord dots and numbers
-    chord = chord_data["chord"].split(',')
-    fingers = chord_data["fingers"].split(',')
+    global chords
+    is_defined_actual_chord = find_chord(actual_chord)
+    
+    if is_defined_actual_chord:
+        name_str_actual_chord = is_defined_actual_chord
+        chord = chords[name_str_actual_chord]["chord"].split(',')
+        fingers = chords[name_str_actual_chord]["fingers"].split(',')
+    else:
+        name_str_actual_chord = ""
+        chord = actual_chord.split(',')
+        fingers = "........"
+
     for i, (fret, finger) in enumerate(zip(chord, fingers)):
         if fret != 'X':
             fret = int(fret)
@@ -177,11 +187,13 @@ def draw_chord(chord_name: str, chord_data: dict) -> cv2.UMat:
                 y = start_y - 20
                 cv2.putText(img, 'O', (x-10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 0), 2, cv2.LINE_AA)
 
-    text_x, text_y = center_text(chord_name, 100, 175)
-    cv2.putText(img, chord_name, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
+    text_x, text_y = center_text(name_str_actual_chord, 100, 175)
+    cv2.putText(img, name_str_actual_chord, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 
     if platform == 'android':
         img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+    cv2.imwrite('test.png', img)
 
     return img
 
@@ -343,11 +355,8 @@ def detect_markers(camera: Camera, resolution: tuple[int, int], matrix: np.ndarr
     if corners:
         image_rgb = draw_marker_detected(frame=image_rgb, marker_IDs=ids, marker_corners=corners, 
                                                 coefficients_matrix=matrix, distortion_coefficients=dist, chord=chord)
-    chord_name = find_chord(chord)
-    if chord_name:
-        chord_data = chords[chord_name]
-        diagram_chord = draw_chord(chord_name=chord_name, chord_data=chord_data)
-        image_rgb = join_frame_diagram(frame=image_rgb, guitar_diagram=diagram_chord)
+    diagram_chord = draw_chord(actual_chord=chord)
+    image_rgb = join_frame_diagram(frame=image_rgb, guitar_diagram=diagram_chord)
 
     if platform == 'android':
         image_rgb = cv2.resize(image_rgb, (resolution[1], resolution[0]))     #  # (1080, 1920)
@@ -392,21 +401,16 @@ def get_pop_up_size() -> tuple[int, int]:
     else:
         return (300, 250)
     
-def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, total_time: float) -> str:
+def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, total_time: float, tempo: int) -> str:
 
     global multipler_time
     time_elapsed = time.time() - time_elapsed 
-    tempo: int = all_song_chords['message']['tempo']
-    chords_data = all_song_chords['message']['tracks'][1]["Guitar 2"]
 
     if time_elapsed > total_time:
         return 'end'
 
     song_elapsed = 0.0
-
-    print(time_elapsed)
-
-    for chord in chords_data:
+    for chord in all_song_chords:
         # Operación para calcular en segundos la duración del acorde - nota
         seconds = chord['time'] * 60 / tempo
         song_elapsed += seconds
@@ -414,19 +418,44 @@ def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, tota
         if song_elapsed > time_elapsed:
             return chord['notes']
 
-def get_total_time(all_song_chords: dict) -> float:
+def get_total_time(all_song_chords: dict, tempo: int) -> float:
+    """
+    Regresa el total del tiempo que dura la canción en segundos
 
+    Args:
+        all_song_chords (dict): El diccionario de acordes de la música seleccionada.
+
+    Returns:
+        song_elapsed (float): El total en segundos que dura la canción.
+    """
     global multipler_time
-    tempo: int = all_song_chords['message']['tempo']
-    chords_data = all_song_chords['message']['tracks'][1]["Guitar 2"]
-
     song_elapsed = 0.0
-    for chord in chords_data:
+
+    for chord in all_song_chords:
+        print(chord)
         # Operación para calcular en segundos la duración del acorde - nota
         seconds = (chord['time'] * 60 / tempo) * multipler_time
         song_elapsed += seconds
         
     return song_elapsed
+
+def set_chords_by_song(chord_by_song: dict, key: str) -> dict:
+    """
+    Asigna los acordes a interpretar por el sistema dependiendo la guitarra que en key delimitemos
+    
+    Args:
+        key (str): La clave de identificación que tiene la guitarra a mostrar
+
+    Returns:
+        None
+    """
+    chord_by_song = chord_by_song['message']['tracks']
+
+    for track in chord_by_song:
+        if key in track:
+            chord_by_song = track[key]
+
+    return chord_by_song
 
 if __name__ != "__main__":
     chords = send_uri("GET", [], "get-diagram-guitar")['message']
@@ -434,11 +463,14 @@ if __name__ != "__main__":
 
 if __name__ == "__main__":
 
-    chords_data = send_uri('GET', {"song": global_title}, 'get-song')
+    chords = send_uri("GET", [], "get-diagram-guitar")['message']
+    all_position_chords = send_uri(method='GET', payload=[], endpoint='get-position-chords')['message']
+    chord_by_song = send_uri('GET', {"song": global_title}, 'get-song')
 
-    for numero in np.arange(1.50, 4.51, 0.1):
-        print(return_actual_chord_by_time(numero, chords_data))
-        print()
+    set_chords_by_song(key='base')
+
+
+    draw_chord("X,X,X,X,X,X")
 
     ## print(time_counter.get_time())
     pass
