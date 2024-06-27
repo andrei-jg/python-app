@@ -24,15 +24,20 @@ class PrincipalView(Screen):
         self.run_ar_active = True
         self.pop_message_method(message='Selecciona 1 canción', method='get_songs')
         
-    def run_set_interval_time(self, instance):
+    def run_set_interval_time(self):
         self.run_ar_active = False  
         self.pop_message_method(message='Selecciona la velocidad', method='set_speed')
     
     def run_instructions(self):
-        print("run_instructions action")
+        utils.instructions = utils.send_uri(method="GET", payload={}, endpoint='get-instructions')['message']
+        utils.instructions.reverse()
+        for i in utils.instructions:
+            self.pop_message_normal(i)
+
+        # self.pop_message()
 
     def run_history(self):
-        self.pop_message_method(message='', method='history')
+        self.pop_message_method(message='Historial de música', method='history')
 
     def run_new_password(self):
         self.pop_message_method(message='Nueva contraseña', method='password')
@@ -43,7 +48,9 @@ class PrincipalView(Screen):
     def pop_message_method(self, message: str, method: str):
         content = PopupContent(message, method)
 
-        size = utils.get_pop_up_size() if method != 'get_songs' else (utils.get_pop_up_size()[0], utils.get_pop_up_size()[1] + 300)
+        views_long = ['get_songs', 'history']
+        size = utils.get_pop_up_size() if method not in views_long else (
+            utils.get_pop_up_size()[0] + 100, utils.get_pop_up_size()[1] + 300)
         popupWindow = Popup(
             title="", 
             content=content, 
@@ -54,7 +61,7 @@ class PrincipalView(Screen):
         popupWindow.bind(on_dismiss=self.pop_message)  # Vincula el evento on_dismiss
 
         if self.run_ar_active:
-            popupWindow.bind(on_dismiss=self.run_set_interval_time)
+            popupWindow.bind(on_dismiss=lambda x: self.run_set_interval_time())
 
         popupWindow.open()
 
@@ -68,6 +75,19 @@ class PrincipalView(Screen):
 
         show = P()
         show.text = utils.wrap_text(utils.message_main, 5)
+
+        popupWindow = Popup(
+            title="", 
+            content=show, 
+            size_hint=(None, None),
+            size=utils.get_pop_up_size())
+        
+        show.popup = popupWindow
+        popupWindow.open()
+
+    def pop_message_normal(self, txt: str):
+        show = P()
+        show.text = utils.wrap_text(txt, 5)
 
         popupWindow = Popup(
             title="", 

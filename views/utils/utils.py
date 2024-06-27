@@ -2,7 +2,8 @@ from kivy.utils import platform
 from kivy.uix.camera import Camera
 from kivy.graphics.texture import Texture
 
-import requests, cv2, time, os, json, numpy as np, pickle, threading
+import requests, cv2, time, os, json, numpy as np, pickle
+from datetime import datetime
 
 url = 'https://andrei00.pythonanywhere.com/api/'
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
@@ -12,6 +13,9 @@ thread_flag = False
 pop_up_size = (0,0)
 
 email_user, name_user, message_main = "", "", ""
+email_user = "a.jimenezgr@gmail.com"
+instructions = []
+idx_instructions = 0
 
 # Variables que se estarán alternando dependiendo la canción
 global_title = "10_Soda Stereo - De Música Ligera (ver 2).json"
@@ -56,14 +60,14 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
         decoded_response = {}  # Handle cases where the response is not JSON
     decoded_response['status_code'] = status_code
 
-    # print("")
-    # print("----")
-    # print("Endpoint:", endpoint)
-    # print("Método:", method)
-    # print("Payload enviado: ", payload)
-    # print("Response: ", decoded_response)
-    # print("----")
-    # print("")
+    print("")
+    print("----")
+    print("Endpoint:", endpoint)
+    print("Método:", method)
+    print("Payload enviado: ", payload)
+    print("Response: ", decoded_response)
+    print("----")
+    print("")
 
     return decoded_response
 
@@ -214,10 +218,13 @@ def get_position_note(note: int, string: int):
         6: 0.013
     }
     new_chord = all_position_chords['positions'] # Gives middle: Between string 6 and 1
-    
-    x = float(new_chord[note]['x']) + float(mapping.get(string, 0))
-    y = float(new_chord[note]['y'])
-    z = float(new_chord[note]['z'])
+
+    try:
+        x = float(new_chord[note]['x']) + float(mapping.get(string, 0))
+        y = float(new_chord[note]['y'])
+        z = float(new_chord[note]['z'])
+    except:
+        x = y= z = -0.1
 
     debug = all_position_chords['debug_chord']
     if debug:
@@ -462,6 +469,16 @@ def get_resolution_camera_root() -> tuple[int, int]:
         return (640, 480)
     else:
         return (640, 360)
+    
+def transform_timestamp_to_date(timestamp: float, format_date: str) -> str:
+    dt_object = datetime.fromtimestamp(timestamp)
+
+    key_date_form = {
+        'day': '%Y-%m-%d',
+        'time': '%Y-%m-%d %H:%M'
+    }
+
+    return dt_object.strftime(key_date_form.get(format_date))
 
 if __name__ != "__main__":
     chords = send_uri("GET", [], "get-diagram-guitar")['message']
@@ -469,16 +486,24 @@ if __name__ != "__main__":
 
 if __name__ == "__main__":
 
-    chords = send_uri("GET", [], "get-diagram-guitar")['message']
-    all_position_chords = send_uri(method='GET', payload=[], endpoint='get-position-chords')['message']
-    chord_by_song = send_uri('GET', {"song": global_title}, 'get-song')
+    if instructions == []:
+        response_get_instructions = send_uri(method="GET", payload={}, endpoint='get-instructions')['message']
+        instructions = response_get_instructions
+    
 
-    set_chords_by_song(key='base')
+    print("Inicio: ", idx_instructions)
 
+    idx_instructions = 2
 
-    draw_chord("X,X,X,X,X,X")
+    if idx_instructions + 1 > len(instructions):
+        instructions = []
+        idx_instructions = 0
+        message_main = ""
+    else:
+        message_main = instructions[idx_instructions]
+        idx_instructions += 1
 
-    ## print(time_counter.get_time())
-    pass
+    print(message_main, idx_instructions)        
+
 
 

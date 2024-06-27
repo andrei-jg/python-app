@@ -7,6 +7,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.button import MDIconButton, MDTextButton
 
 from views.utils import utils
+import time
 
 class PopupContent(BoxLayout):
     def __init__(self, message: str, mode: str, **kwargs):
@@ -27,7 +28,6 @@ class PopupContent(BoxLayout):
         self.popup = None
 
     def on_dismiss(self, instance):
-        # Esta función se llamará cuando el Popup se cierre
         print("Popup cerrado")
 
     def set_new_password(self):
@@ -43,15 +43,17 @@ class PopupContent(BoxLayout):
         self.add_widget(self.confirm_button)
 
     def set_history(self):
-        scroll_view = ScrollView(size_hint=(1, None), size=(180, 150))
+        response = self.get_history_by_user_service()
+
+        scroll_view = ScrollView(size_hint=(1, None), size=(100, 580))
         grid_layout = GridLayout(cols=1, padding=10, spacing=10, size_hint_y=None)
         grid_layout.bind(minimum_height=grid_layout.setter('height'))
 
-        # Añadir elementos al GridLayout
-        for i in range(20):  # Puedes cambiar el rango para agregar más elementos
-            btn = Button(text=f'Button {i+1}', size_hint_y=None, height=40)
-            btn.bind(on_release=self.on_button_click)
-            grid_layout.add_widget(btn)
+        for song, times in response.items():
+            for time in times:
+                text = f"{song}: {utils.transform_timestamp_to_date(timestamp=time, format_date='day')}"
+                btn = Button(text=text, size_hint_y=None, height=100)
+                grid_layout.add_widget(btn)
 
         scroll_view.add_widget(grid_layout)
         self.add_widget(scroll_view)
@@ -63,10 +65,9 @@ class PopupContent(BoxLayout):
         grid_layout = GridLayout(cols=1, padding=10, spacing=10, size_hint_y=None)
         grid_layout.bind(minimum_height=grid_layout.setter('height'))
 
-        # Añadir elementos al GridLayout
-        for song in response:  # Puedes cambiar el rango para agregar más elementos
+        for song in response:
             btn = Button(text=f'{song["title"]}', size_hint_y=None, height=100)
-            btn.song_id = song['filename']  # Añadir una propiedad personalizada
+            btn.song_id = song['filename']
             btn.bind(on_release=self.set_global_title)
             grid_layout.add_widget(btn)
 
@@ -75,11 +76,13 @@ class PopupContent(BoxLayout):
 
     def set_global_title(self, button):
         utils.global_title = button.song_id
+        self.add_history_by_user_service(title=button.text)
         self.popup.dismiss()
 
-    def on_button_click(self, button):
-        print(f'Selected: {button.text}, ID: {button.song_id}')
-        # self.popup.dismiss()
+    def set_global_title(self, button):
+        utils.global_title = button.song_id
+        self.add_history_by_user_service(title=button.text)
+        self.popup.dismiss()
 
     def set_speed(self):
 
@@ -110,7 +113,6 @@ class PopupContent(BoxLayout):
         utils.message_main = 'Start AR'
         self.popup.dismiss()
         
-        
     def change_password_service(self, instance):
         payload = {'email': utils.email_user, 'new_password': self.text_input.text, 'challenge': False}
         response_reset_password = utils.send_uri(method="POST", payload=payload, endpoint='reset-password')
@@ -123,3 +125,19 @@ class PopupContent(BoxLayout):
         payload = {'song': ''}
         response_get_all_songs = utils.send_uri(method="GET", payload=payload, endpoint='get-song')['message']
         return response_get_all_songs
+    
+    def get_history_by_user_service(self):
+        payload = {'email': utils.email_user}
+        return utils.send_uri(method="GET", payload=payload, endpoint='get-history')['message']
+    
+    def add_history_by_user_service(self, title: str):
+        user_history = self.get_history_by_user_service()
+
+        if title in user_history:
+            print(user_history[title])
+            user_history[title].append(time.time())
+        else:
+            user_history[title] = [time.time()]
+
+        payload = {'email': utils.email_user, 'songs': user_history}
+        utils.send_uri(method="PUT", payload=payload, endpoint='add-history')['message']
