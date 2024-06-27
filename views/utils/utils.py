@@ -416,7 +416,7 @@ def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, tota
     song_elapsed = 0.0
     for chord in all_song_chords:
         # Operación para calcular en segundos la duración del acorde - nota
-        seconds = chord['time'] * 60 / (tempo * multipler_time)
+        seconds = chord['time'] * 60 / int(tempo * multipler_time)
         song_elapsed += seconds
         # print(chord, seconds, song_elapsed)
         if song_elapsed >= time_elapsed:
@@ -438,7 +438,7 @@ def get_total_time(all_song_chords: dict, tempo: int) -> float:
 
     for chord in all_song_chords:
         # Operación para calcular en segundos la duración del acorde - nota
-        seconds = chord['time'] * 60 / (tempo * multipler_time)
+        seconds = chord['time'] * 60 / int(tempo * multipler_time)
         song_elapsed += seconds
         
     return song_elapsed
