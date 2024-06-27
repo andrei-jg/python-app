@@ -105,12 +105,17 @@ class PopupContent(BoxLayout):
 
     def on_button_press(self, txt_button: str):
         key_speed = {
-            'low': 1.6,
+            'low': 1.5,
             'normal': 1.0,
-            'up': 0.7
+            'up': 0.5
         }
         utils.multipler_time = key_speed.get(txt_button)
         utils.message_main = 'Start AR'
+
+        # Se arma el archivo mp3 a descargar...
+        split_json = utils.global_title.split('.json')[0]
+        utils.mp3_title = f"{split_json}_{txt_button}.mp3"
+
         self.popup.dismiss()
         
     def change_password_service(self, instance):

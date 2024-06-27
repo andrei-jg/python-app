@@ -9,7 +9,6 @@ url = 'https://andrei00.pythonanywhere.com/api/'
 aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_1000)
 parameters = cv2.aruco.DetectorParameters_create()
 pixel = True
-thread_flag = False
 pop_up_size = (0,0)
 
 email_user, name_user, message_main = "", "", ""
@@ -20,6 +19,7 @@ idx_instructions = 0
 # Variables que se estarán alternando dependiendo la canción
 global_title = "10_Soda Stereo - De Música Ligera (ver 2).json"
 multipler_time = 1.0
+mp3_title = ""
 
 def send_uri(method: str, payload: dict, endpoint: str) -> dict:
     """
@@ -49,7 +49,7 @@ def send_uri(method: str, payload: dict, endpoint: str) -> dict:
 
     response = methods[method](url + endpoint, json=payload)
 
-    if endpoint == 'calibration-file':
+    if endpoint == 'calibration-file' or endpoint == 'get-mp3':
         return response
 
     status_code = response.status_code
@@ -285,17 +285,15 @@ def read_camera_calibration_params() -> tuple[np.ndarray, np.ndarray]:
 def get_index_camera() -> int:
     return 0 if pixel else 1
 
-def get_path() -> str:
-    timestr = time.strftime("%Y%m%d_%H%M%S")
-    file_name = f"IMG_{timestr}.png"
+def get_path(filename: str) -> str:
+    
     if platform == 'android':
         # Obtener la ruta de la carpeta DCIM
         dcim_path = os.path.join(os.environ['EXTERNAL_STORAGE'], 'DCIM')
-        file_path = os.path.join(dcim_path, file_name)
+        file_path = os.path.join(dcim_path, filename)
     else:
-        file_path = file_name  # Si no es Android, solo usa el nombre del archivo
+        file_path = filename  # Si no es Android, solo usa el nombre del archivo
 
-    # return 'IMG.png'
     return file_path
 
 def draw_marker_detected(frame: cv2.UMat, marker_IDs: any, marker_corners: any, 
@@ -410,7 +408,7 @@ def get_pop_up_size() -> tuple[int, int]:
 def return_actual_chord_by_time(time_elapsed: float, all_song_chords: dict, total_time: float, tempo: int) -> str:
 
     global multipler_time
-    time_elapsed = time.time() - time_elapsed 
+    time_elapsed = time.time() - time_elapsed
 
     if time_elapsed > total_time:
         return 'end'
