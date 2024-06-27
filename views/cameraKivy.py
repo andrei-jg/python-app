@@ -2,7 +2,7 @@ from kivy.core.audio import SoundLoader
 from kivy.uix.screenmanager import Screen
 from kivy.clock import Clock
 from views.utils import utils
-import time, os
+import time, tempfile, io
 
 class CaptureARView(Screen):
     def __init__(self, **kwargs):
@@ -16,6 +16,7 @@ class CaptureARView(Screen):
         self.camera_instance = None
 
     def on_enter(self, *args):
+        self.sound = self.load_song()
         super(CaptureARView, self).on_enter(*args)
         Clock.schedule_interval(self.update, 1.0/1000.0)  # Actualiza cada 1/30 de segundo (30 fps)
 
@@ -36,9 +37,7 @@ class CaptureARView(Screen):
         
         self.total_time_song: float = utils.get_total_time(self.chord_by_song, self.tempo)
         
-        self.sound = SoundLoader.load(self.get_song_service())
         self.is_init_song = True
-        self.play_song()
 
     def on_leave(self, *args):
         super(CaptureARView, self).on_leave(*args)
@@ -50,6 +49,7 @@ class CaptureARView(Screen):
     def update(self, dt):
 
         if self.is_init_song:
+            self.play_song()
             self.time_init = time.time()
             self.is_init_song = False
         
@@ -65,23 +65,44 @@ class CaptureARView(Screen):
                 self.manager.current = 'principal_view'
 
     def play_song(self):
-        self.delete_mp3_downloaded()
         if self.sound:
             self.sound.play()
 
-    def get_song_service(self) -> str:
-
+    def get_song_service(self) -> io.BytesIO:
         response = utils.send_uri(method='GET', payload={'song': f'{utils.mp3_title}'}, endpoint='get-mp3')
-        mp3_path = utils.get_path(utils.mp3_title)
-        with open(mp3_path, 'wb') as file:
-            file.write(response.content)
-
-        return mp3_path
+        
+        buffer = io.BytesIO()
+        buffer.write(response.content)
+        buffer.seek(0)
+        
+        return buffer
     
-    def delete_mp3_downloaded(self):
+    def load_song(self):
+        attempts = 3  # Número de intentos máximos
+        for attempt in range(1, attempts + 1):
+            mp3_buffer = self.get_song_service()
 
-        mp3_path = utils.get_path(utils.mp3_title)
-        try:
-            os.remove(mp3_path)
-        except:
-            pass
+            # Verificar la integridad del buffer comparando longitudes
+            original_length = len(mp3_buffer.getvalue())
+
+            # Crear un archivo temporal con extensión .mp3
+            with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_file:
+                temp_file.write(mp3_buffer.read())
+                temp_file_path = temp_file.name
+
+            # Leer el contenido del archivo temporal y comparar longitudes
+            with open(temp_file_path, 'rb') as f:
+                temp_file_content = f.read()
+                temp_file_length = len(temp_file_content)
+
+            # Comparar longitudes para asegurar la integridad
+            if original_length != temp_file_length:
+                if attempt < attempts:
+                    print(f"Intento {attempt}: La longitud del buffer original y el archivo temporal no coinciden, reintentando...")
+                    continue
+                else:
+                    raise RuntimeError(f"Se superó el número máximo de intentos ({attempts}). Posible pérdida de datos.")
+            else:
+                break  # Salir del bucle si la longitud es consistente
+
+        return SoundLoader.load(temp_file_path)
