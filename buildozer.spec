@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = SIMG
+title = SIRMG
 
 # (str) Package name
 package.name = myapp
@@ -13,7 +13,7 @@ package.domain = org.test
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,mp3
 
 # (list) List of inclusions using pattern matching
 source.include_patterns = views/*,views/images/*
@@ -47,7 +47,7 @@ requirements = python3,kivy==2.2.1,kivymd==1.2.0,Kivy_Garden==0.1.5,pillow==9.4.
 #presplash.filename = %(source.dir)s/data/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = views/images/vrLogo.png
 
 # (list) Supported orientations
 # Valid options are: landscape, portrait, portrait-reverse or landscape-reverse
